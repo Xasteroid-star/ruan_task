@@ -16,12 +16,12 @@ LEVELS = [
         Arrow(2, 2, LEFT),
     ], max_mistakes=2),
 
-    # 第 2 关：引入简单阻挡关系，需按 (0,2) → (0,0) → (3,0) → (3,2) 的顺序。
+    # 第 2 关：引入简单阻挡关系，(0,0) 与 (3,0) 分别被前方箭头阻挡。
     Level("第 2 关", 4, 4, [
-        Arrow(0, 0, RIGHT),
-        Arrow(0, 2, DOWN),
-        Arrow(3, 2, LEFT),
-        Arrow(3, 0, UP),
+        Arrow(0, 0, RIGHT),   # 被 (0,2) 阻挡
+        Arrow(0, 2, DOWN),    # 无阻挡
+        Arrow(2, 1, RIGHT),   # 无阻挡
+        Arrow(3, 0, UP),      # 被 (0,0) 阻挡
     ], max_mistakes=3),
 
     # 第 3 关：多方向交错，含一条依赖链 + 两个自由箭头。
