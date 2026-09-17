@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import os
 
 import pygame
 
@@ -23,11 +24,19 @@ def cell_center(origin_x: int, origin_y: int, row: int, col: int) -> tuple[int, 
 
 
 def _load_font(size: int) -> pygame.font.Font:
-    """优先加载支持中文的系统字体，失败则回退默认字体。"""
-    for name in ("microsoftyahei", "msyh", "simhei", "simsun", "dengxian"):
-        path = pygame.font.match_font(name)
-        if path:
-            return pygame.font.Font(path, size)
+    """加载支持中文的系统字体；失败则回退默认字体（仅 ASCII）。
+
+    某些 Windows 环境上 pygame 的 match_font / SysFont 会因系统字体表中存在
+    异常条目而抛 TypeError，因此这里直接用已知路径加载中文字体文件。
+    """
+    windir = os.environ.get("WINDIR", r"C:\Windows")
+    for name in ("msyh.ttc", "msyhbd.ttc", "simhei.ttf", "simsun.ttc", "Deng.ttf", "msyh.ttf"):
+        path = os.path.join(windir, "Fonts", name)
+        if os.path.exists(path):
+            try:
+                return pygame.font.Font(path, size)
+            except pygame.error:
+                continue
     return pygame.font.Font(None, size)
 
 
