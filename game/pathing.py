@@ -24,27 +24,41 @@ def can_fly(arrow: Arrow, remaining, rows: int, cols: int) -> bool:
     return all(pos not in remaining for pos in cells_in_front(arrow, rows, cols))
 
 
-def find_clear_order(level: Level) -> list[Arrow] | None:
-    """返回一个能清空整关的点击顺序（Arrow 列表）；若不可解则返回 None。
+def solve(arrows: list[Arrow], rows: int, cols: int) -> list[Arrow] | None:
+    """返回一个能清空给定剩余箭头的顺序（Arrow 列表）；若不可解则返回 None。
 
     采用「剥洋葱」式贪心：只要存在路径畅通的箭头就消除它。消除箭头只会让
     更多箭头变得可消除，因此贪心正确——能找到顺序当且仅当关卡可解。
     """
-    arrows = list(level.arrows)
-    remaining = {a.pos for a in arrows}
+    remaining = list(arrows)
+    remain_set = {a.pos for a in remaining}
     order = []
-    while arrows:
+    while remaining:
         next_arrow = None
-        for a in arrows:
-            if can_fly(a, remaining, level.rows, level.cols):
+        for a in remaining:
+            if can_fly(a, remain_set, rows, cols):
                 next_arrow = a
                 break
         if next_arrow is None:
             return None
-        arrows.remove(next_arrow)
-        remaining.discard(next_arrow.pos)
+        remaining.remove(next_arrow)
+        remain_set.discard(next_arrow.pos)
         order.append(next_arrow)
     return order
+
+
+def find_clear_order(level: Level) -> list[Arrow] | None:
+    """返回一个能清空整关的点击顺序（兼容旧接口）。"""
+    return solve(level.arrows, level.rows, level.cols)
+
+
+def find_flyable(arrows: list[Arrow], rows: int, cols: int) -> Arrow | None:
+    """返回当前剩余箭头中任意一个可安全飞出的箭头；无则返回 None（用于提示）。"""
+    remain_set = {a.pos for a in arrows}
+    for a in arrows:
+        if can_fly(a, remain_set, rows, cols):
+            return a
+    return None
 
 
 def is_solvable(level: Level) -> bool:

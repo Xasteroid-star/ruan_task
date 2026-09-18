@@ -16,7 +16,7 @@ os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 import pygame  # noqa: E402
 
 from game.models import Arrow, Direction  # noqa: E402
-from game.renderer import board_origin, cell_center  # noqa: E402
+from game.renderer import board_geometry, cell_center  # noqa: E402
 from game.state import State  # noqa: E402
 from main import App, Flying  # noqa: E402
 
@@ -51,8 +51,8 @@ def main():
 
     # 4. 箭头飞出动画
     level = app.game.current_level
-    ox, oy = board_origin(level.cols)
-    cx, cy = cell_center(ox, oy, 0, 0)
+    ox, oy, cell = board_geometry(level.rows, level.cols)
+    cx, cy = cell_center(ox, oy, 0, 0, cell)
     app.flying.append(Flying(Arrow(0, 0, Direction.RIGHT), cx, cy))
     app.draw()
     pygame.image.save(app.screen, os.path.join(OUT, "4_flying.png"))
